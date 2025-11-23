@@ -44,7 +44,8 @@ if (match && match[1]) {
     imageUrl = match[1].trim().replace(/['"]/g, '');
 }
 
-console.log('Extracted Image URL:', imageUrl);
+// console.log('Extracted Image URL:', imageUrl);
+    
     const imageAuthorLink = $('img.result_author').attr('src')
     // const idMatch = styleContent.match(/#mainpicture\s*\{[^}]*background-image:\s*url\(['"]?(.*?)['"]?\)/);
     const videoLink = $('a.without_watermark').attr('href')
@@ -53,6 +54,7 @@ console.log('Extracted Image URL:', imageUrl);
     const audioLink = $('a.music').attr('href')
     return{
         videoLink,
+        videoImage:imageUrl,
         stats:{
             statsLike,
             statsComment,
@@ -68,10 +70,10 @@ console.log('Extracted Image URL:', imageUrl);
         
 }
 
-test_sstik = async()=>{
-    const result = await sstik('https://www.tiktok.com/@williesalim/video/7483538821498342663?is_from_webapp=1&sender_device=pc')
-    console.log(result)
-}
+// test_sstik = async()=>{
+//     const result = await sstik('https://www.tiktok.com/@williesalim/video/7483538821498342663?is_from_webapp=1&sender_device=pc')
+//     console.log(result)
+// }
 
-test_sstik()
-// module.exports = {sstik}
+// test_sstik()
+module.exports = {sstik}
