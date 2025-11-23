@@ -26,7 +26,25 @@ async function sstik(url) {
     const statsComment = stats[2]
     const statsShare = stats[3]
     
-    const styleContent = $('style').html()
+    // 
+    const styleTag = $('style').first();
+
+// 3. Get the raw text content from the <style> tag
+const cssText = styleTag.text();
+
+// 4. Use a regular expression to find and extract the URL
+const regex = /background-image:\s*url\((.*?)\);/;
+const match = cssText.match(regex);
+
+let imageUrl = null;
+
+if (match && match[1]) {
+    // The captured group (index 1) contains the URL
+    // We clean up any surrounding quotes if they exist, though the provided example doesn't have them
+    imageUrl = match[1].trim().replace(/['"]/g, '');
+}
+
+console.log('Extracted Image URL:', imageUrl);
     const imageAuthorLink = $('img.result_author').attr('src')
     // const idMatch = styleContent.match(/#mainpicture\s*\{[^}]*background-image:\s*url\(['"]?(.*?)['"]?\)/);
     const videoLink = $('a.without_watermark').attr('href')
