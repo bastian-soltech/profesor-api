@@ -19,6 +19,7 @@ async function sstik(url) {
     })
     
     const dataInfo = await responseInfo.text()
+    console.log(dataInfo)
     const $ = cheerio.load(dataInfo)
     const stats = $('div#trending-actions div').children().not('svg').map((i, el) => $(el).text().trim()).get();
     const statsLike = stats[1]
@@ -27,9 +28,9 @@ async function sstik(url) {
     
     const styleContent = $('style').html()
     const imageAuthorLink = $('img.result_author').attr('src')
-    const idMatch = styleContent.match(/#mainpicture\s*\{[^}]*background-image:\s*url\(['"]?(.*?)['"]?\)/);
+    // const idMatch = styleContent.match(/#mainpicture\s*\{[^}]*background-image:\s*url\(['"]?(.*?)['"]?\)/);
     const videoLink = $('a.without_watermark').attr('href')
-    const authorName = $('div#avatarAndTextUsual').find('div.pd-lr').text()
+    const authorName = $('div.pd-lr h2').text().trim()
     const videoTitle = $('div#avatarAndTextUsual').find('p.maintext').text()
     const audioLink = $('a.music').attr('href')
     return{
@@ -49,4 +50,10 @@ async function sstik(url) {
         
 }
 
-module.exports = {sstik}
+test_sstik = async()=>{
+    const result = await sstik('https://www.tiktok.com/@williesalim/video/7483538821498342663?is_from_webapp=1&sender_device=pc')
+    console.log(result)
+}
+
+test_sstik()
+// module.exports = {sstik}
