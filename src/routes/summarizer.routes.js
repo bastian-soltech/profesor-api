@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import * as summarizerController from "../controllers/summarizer.controller.js";
+
 const router = express.Router();
-const summarizerController = require("../controllers/summarizer.controller");
 
+router.get("/youtube", summarizerController.recapio);
 
-router.get("/youtube",summarizerController.recapio);
-module.exports = router;
+export default router;

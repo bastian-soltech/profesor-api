@@ -1,6 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const rmbg = require("../controllers/rmbg.controller");
+import express from "express";
+import * as rmbgController from "../controllers/rmbg.controller.js";
 
-router.get("/v1/remove-bg",rmbg.rmbg );
-module.exports = router;
+const router = express.Router();
+
+router.get("/v1/remove-bg", rmbgController.rmbg);
+
+export default router;

@@ -1,6 +1,8 @@
+import { removeBg } from '../services/rmbackground.service.js';
+import { catchAsync } from "../utils/catchAsync.js";
+import { successResponse } from "../utils/response.js";
 
-const {removeBg} = require('../services/rmbackground.service')
-exports.rmbg = async(req,res)=>{
-    
-
-}
+export const rmbg = catchAsync(async (req, res) => {
+  // Logic for rmbg if implemented
+  successResponse(res, {}, 'RMBG endpoint (logic not fully implemented)');
+});

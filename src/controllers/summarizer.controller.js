@@ -1,24 +1,22 @@
+import { RecapioClient } from "../services/youtubesummarizer.service.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import { successResponse } from "../utils/response.js";
 
-const { RecapioClient } = require("../services/youtubesummarizer.service");
-exports.recapio = async(req,res)=>{
-    const url = req.query.url
-    const urlObj = new URL(url);
-    urlObj.search = ""; // hapus query params
-    
-const cleanUrl = urlObj.toString()
-    const recapio = new RecapioClient(cleanUrl)
-      const videoData = await recapio.start();
-//   console.log("Info Video:", videoData);
+export const recapio = catchAsync(async (req, res) => {
+  const { url } = req.query;
+  if (!url) {
+    return res.status(400).json({ error: "Missing url parameter" });
+  }
 
+  const urlObj = new URL(url);
+  urlObj.search = "";
+  const cleanUrl = urlObj.toString();
+
+  const recapio = new RecapioClient(cleanUrl);
+  const videoData = await recapio.start();
   const summary = await recapio.sendMessage(
-    "Extract the most important bullet points from this video, organized in a clear, structured format.",
+    "Extract the most important bullet points from this video, organized in a clear, structured format."
   );
-const data = {
-    video_info:videoData,
-     summary   
-}
 
-    res.json({status:200,data})
-
-
-}
+  successResponse(res, { video_info: videoData, summary }, 'Success summarize video');
+});

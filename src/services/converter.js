@@ -1,16 +1,16 @@
-
 import axios from "axios";
-import fs from 'fs'
+import fs from 'fs';
 import FormData from "form-data";
 
-function randomId() { return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) { const r = (Math.random() * 16) | 0, v = c === "x" ? r : (r & 0x3) | 0x8; return v.toString(16); }); }
+const randomId = () => "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+  const r = (Math.random() * 16) | 0;
+  const v = c === "x" ? r : (r & 0x3) | 0x8;
+  return v.toString(16);
+});
 
-async function convertFile() {
+export async function convertFile(filePath, outputPath = "./output.mp3") {
   const randomUUID = randomId();
   const apiUrl = `https://s1.senseidownload.com/Api/V1/Process/ConvertFile/${randomUUID}`;
-  console.log("🎯 API URL:", apiUrl);
-
-  const filePath = "./video2.mp4";
   const fileSize = fs.statSync(filePath).size;
 
   const form = new FormData();
@@ -29,13 +29,10 @@ async function convertFile() {
   form.append("key", "50a5eecb-8723-411b-b99e-27c187004abf");
 
   try {
-    console.log("🚀 Mengirim permintaan konversi...");
     const res = await axios.post(apiUrl, form, {
       headers: {
         ...form.getHeaders(),
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36",
-        Accept: "*/*",
+        "User-Agent": "Mozilla/5.0",
         Origin: "https://fabconvert.com",
         Referer: "https://fabconvert.com",
       },
@@ -43,21 +40,12 @@ async function convertFile() {
       maxBodyLength: Infinity,
     });
 
-    console.log("✅ Status:", res.status);
-    console.log("📦 Response:", res.data);
-
     const fileUrl = `https://s1.senseidownload.com/Api/V1${res.data.result.url}`;
-    console.log("🔗 Download URL:", fileUrl);
-
-    const downloadRes = await axios.get(fileUrl, {
-      responseType: "arraybuffer",
-    });
-
-    const outputPath = "./output.mp3";
+    const downloadRes = await axios.get(fileUrl, { responseType: "arraybuffer" });
     fs.writeFileSync(outputPath, downloadRes.data);
-    console.log(`🎶 File MP3 berhasil disimpan di: ${outputPath}`);
+    return outputPath;
   } catch (err) {
     console.error("❌ Error:", err.response?.status, err.response?.data || err.message);
+    throw err;
   }
 }
-convertFile()

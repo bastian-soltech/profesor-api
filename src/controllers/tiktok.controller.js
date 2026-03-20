@@ -1,9 +1,16 @@
+import { sstik } from "../services/tiktok.service.js";
+import { catchAsync } from "../utils/catchAsync.js";
+import { successResponse } from "../utils/response.js";
 
-const { sstik } = require("../services/tiktok.service");
-exports.sstik = async(req,res)=>{
-    const url = req.query.url
-    const data = await sstik(url)
-    res.json({status:200,data})
+export const sstik_download = catchAsync(async (req, res) => {
+  const { url } = req.query;
+  if (!url) {
+    return res.status(400).json({ error: "Missing url parameter" });
+  }
 
+  const data = await sstik(url);
+  successResponse(res, data, 'Success fetch tiktok download link');
+});
 
-}
+// Alias for existing route compatibility if needed
+export { sstik_download as sstik };

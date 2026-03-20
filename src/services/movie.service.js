@@ -1,4 +1,4 @@
-const { filmApik } = require( "../scrapers/movies/filmApik");
-const {  hostingHola } = require("../scrapers/movies/filmHosting");
+import { filmApik } from "../scrapers/movies/filmApik.js";
+import { hostingHola } from "../scrapers/movies/filmHosting.js";
 
-module.exports = { filmApik, hostingHola };
+export { filmApik, hostingHola };

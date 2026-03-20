@@ -1,35 +1,50 @@
-    const express = require("express");
-    const swaggerUi = require("swagger-ui-express");
-    const YAML = require("yamljs");
-    const cors = require("cors");
-    const path = require("path");
-    const compression = require("compression");
-    // Load file dokumentasi Swagger
-    // const swaggerDocument = YAML.load(path.join(__dirname, "docs", "api-docs.yaml"));
+import express from "express";
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from 'url';
+import compression from "compression";
+import fs from 'fs';
+import apiRoutes from "./src/routes/index.js";
 
-    const swaggerDocument = require('./docs/swagger_output.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    const app = express();
-    app.use(cors({origin:'*'}))
-    app.use(express.json());
-    app.use(compression());
-    app.use
+// Load Swagger document
+const swaggerPath = path.join(__dirname, "docs", "swagger_output.json");
+const swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, 'utf8'));
 
-    // Import API routes
-    const apiRoutes = require("./src/routes");
-    // Tambahkan Swagger UI di `/docs`
-    // app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-    app.use("/", apiRoutes);
-    app.get('/docs-json',(req,res)=>{
-        res.json(swaggerDocument);
-    })
-    app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "docs.html"));
-    });
+const app = express();
 
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+app.use(compression());
 
-    const PORT = 3000;
-    app.listen(PORT, () => {
-        console.log(`Server berjalan di http://localhost:${PORT}`);
-        console.log(`Dokumentasi API: http://localhost:${PORT}/docs`);
-    });
+// Routes
+app.use("/api", apiRoutes);
+
+app.get('/docs-json', (req, res) => {
+  res.json(swaggerDocument);
+});
+
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "docs.html"));
+});
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    status: err.status || 500,
+    message: err.message || 'Internal Server Error',
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`API Documentation: http://localhost:${PORT}/docs`);
+});

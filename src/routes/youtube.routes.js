@@ -1,8 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const YoutubeController = require("../controllers/youtube.controller");
+import express from "express";
+import * as youtubeController from "../controllers/youtube.controller.js";
 
-router.get("/v1/detail", YoutubeController.Ddownr_metadata);
-router.get("/v1/download", YoutubeController.Ddownr_download);
-router.get("/v2/download", YoutubeController.ssvid);
-module.exports = router;
+const router = express.Router();
+
+router.get("/v1/detail", youtubeController.Ddownr_metadata);
+router.get("/v1/download", youtubeController.Ddownr_download);
+router.get("/v2/download", youtubeController.ssvid);
+
+export default router;

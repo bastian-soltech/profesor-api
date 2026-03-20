@@ -1,79 +1,38 @@
-// const base_url = 'https://ssstik.io//abc?url=UnpCRkEz==PT13TjBnek0xTURPNElUTTBrRE96UWpNMll6TQ__==QWRYYXN4V2FsTlhZc2xXYg__'
+import * as cheerio from 'cheerio';
 
-const formData = new FormData()
-const cheerio = require('cheerio')
+export async function sstik(url) {
+  const formData = new URLSearchParams();
+  formData.append('id', url);
+  formData.append('locale', 'id');
+  formData.append('tt', 'eG1qNHQ_');
 
-async function sstik(url) {
-    formData.append('id', `${url}`);
-    formData.append('locale', 'id');
-    formData.append('tt', 'eG1qNHQ_'); // Jika token diperlukan
-    
-    // sstik
-    const responseInfo = await fetch('https://ssstik.io/abc?url=dl',{
-        method: 'POST',
-        headers: {
-            'referer':'https://ssstik.io/id',
-            'user-agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Mobile Safari/537.36'
-        },
-        body: formData
-    })
-    
-    const dataInfo = await responseInfo.text()
-    console.log(dataInfo)
-    const $ = cheerio.load(dataInfo)
-    const stats = $('div#trending-actions div').children().not('svg').map((i, el) => $(el).text().trim()).get();
-    const statsLike = stats[1]
-    const statsComment = stats[2]
-    const statsShare = stats[3]
-    
-    // 
-    const styleTag = $('style').first();
+  const response = await fetch('https://ssstik.io/abc?url=dl', {
+    method: 'POST',
+    headers: {
+      'referer': 'https://ssstik.io/id',
+      'user-agent': 'Mozilla/5.0'
+    },
+    body: formData
+  });
 
-// 3. Get the raw text content from the <style> tag
-const cssText = styleTag.text();
+  const html = await response.text();
+  const $ = cheerio.load(html);
 
-// 4. Use a regular expression to find and extract the URL
-const regex = /background-image:\s*url\((.*?)\);/;
-const match = cssText.match(regex);
+  const stats = $('div#trending-actions div').children().not('svg').map((i, el) => $(el).text().trim()).get();
+  const styleTag = $('style').first().text();
+  const imageUrl = styleTag.match(/background-image:\s*url\((.*?)\);/)?.[1]?.trim().replace(/['"]/g, '');
 
-let imageUrl = null;
-
-if (match && match[1]) {
-    // The captured group (index 1) contains the URL
-    // We clean up any surrounding quotes if they exist, though the provided example doesn't have them
-    imageUrl = match[1].trim().replace(/['"]/g, '');
+  return {
+    videoLink: $('a.without_watermark').attr('href'),
+    videoImage: imageUrl,
+    stats: {
+      likes: stats[1],
+      comments: stats[2],
+      shares: stats[3]
+    },
+    authorName: $('div.pd-lr h2').text().trim(),
+    videoTitle: $('div#avatarAndTextUsual p.maintext').text().trim(),
+    imageAuthorLink: $('img.result_author').attr('src'),
+    audioLink: $('a.music').attr('href')
+  };
 }
-
-// console.log('Extracted Image URL:', imageUrl);
-    
-    const imageAuthorLink = $('img.result_author').attr('src')
-    // const idMatch = styleContent.match(/#mainpicture\s*\{[^}]*background-image:\s*url\(['"]?(.*?)['"]?\)/);
-    const videoLink = $('a.without_watermark').attr('href')
-    const authorName = $('div.pd-lr h2').text().trim()
-    const videoTitle = $('div#avatarAndTextUsual').find('p.maintext').text()
-    const audioLink = $('a.music').attr('href')
-    return{
-        videoLink,
-        videoImage:imageUrl,
-        stats:{
-            statsLike,
-            statsComment,
-            statsShare
-        },
-        authorName,
-        videoTitle,
-        imageAuthorLink,
-        audioLink
-    }
-
-    
-        
-}
-
-// test_sstik = async()=>{
-//     const result = await sstik('https://www.tiktok.com/@williesalim/video/7483538821498342663?is_from_webapp=1&sender_device=pc')
-//     console.log(result)
-// }
-
-// test_sstik()
-module.exports = {sstik}

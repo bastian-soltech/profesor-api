@@ -1,17 +1,20 @@
-const axios = require("axios");
-const cheerio = require("cheerio");
+import axios from "axios";
+import * as cheerio from "cheerio";
 
 /**
- * Ambil HTML dan parse pakai Cheerio
+ * Fetch HTML and parse with Cheerio
  */
-async function fetchHtml(url, timeout = 10000) {
+export async function fetchHtml(url, timeout = 10000) {
   try {
-    const { data } = await axios.get(url, { timeout });
+    const { data } = await axios.get(url, {
+      timeout,
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+      }
+    });
     return cheerio.load(data);
   } catch (err) {
     console.error(`❌ Gagal fetch: ${url}`);
     throw new Error(err.message);
   }
 }
-
-module.exports = { fetchHtml };

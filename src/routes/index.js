@@ -1,11 +1,19 @@
-const express = require("express");
+import express from "express";
+import spotifyRoutes from "./spotify.routes.js";
+import tiktokRoutes from "./tiktok.routes.js";
+import youtubeRoutes from "./youtube.routes.js";
+import moviesRoutes from "./movies.routes.js";
+import rmbgRoutes from "./rmbg.js";
+import summarizerRoutes from "./summarizer.routes.js";
+import ProxyRouter from './proxy.routes.js'
 const router = express.Router();
 
-router.use("/api/spotify", require("./spotify.routes"));
-router.use("/api/tiktok", require("./tiktok.routes"));
-router.use("/api/youtube", require("./youtube.routes"));
-router.use("/api/movies", require("./movies.routes"));
-router.use("/api/rm-bg", require("./rmbg"));
-router.use("/api/summarize", require("./summarizer.routes"));
+router.use("/spotify", spotifyRoutes);
+router.use("/tiktok", tiktokRoutes);
+router.use("/youtube", youtubeRoutes);
+router.use("/movies", moviesRoutes);
+router.use("/rm-bg", rmbgRoutes);
+router.use("/summarize", summarizerRoutes);
+router.use('/proxy',ProxyRouter)
 
-module.exports = router;
+export default router;
